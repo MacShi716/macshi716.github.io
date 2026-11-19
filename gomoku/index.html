@@ -2494,6 +2494,9 @@ function GomokuLogic() {
   var LS_PLAYER = 'gomoku.player.v1', MM_WAIT = 10;
   var MM = { state: 'idle', timer: null, t0: 0, busy: false, lastPoll: 0, enabled: null, player: loadJSON(LS_PLAYER, null), watch: null };
   var NOBK = '这个功能要到完整版站用：https://gomoku-umber.vercel.app';
+  var NOBK_HTML = '这个功能要到完整版站用：<a href="https://gomoku-umber.vercel.app" target="_blank" rel="noopener">https://gomoku-umber.vercel.app</a>';
+  function escM(m) { return m === NOBK ? NOBK_HTML : esc(m); }
+  function setMsg(el, m) { if (m === NOBK) el.innerHTML = NOBK_HTML; else el.textContent = m; }
   function apiCall(op, body, method) {
     var opt = method === 'GET' ? { method: 'GET' } : { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ op: op }, body || {})) };
     var u = method === 'GET' ? API + '?op=' + op + ['pid', 'tab', 'sea'].map(function (k) { return body && body[k] ? '&' + k + '=' + encodeURIComponent(body[k]) : ''; }).join('') : API;
@@ -2822,7 +2825,7 @@ function GomokuLogic() {
   function modal(id, on) { $('#' + id).classList.toggle('show', on); }
   function avPicker(cur) { return '<div class="avs">' + AVATARS.map(function (a, i) { return '<button type="button" data-av="' + i + '" class="' + (i === cur ? 'on' : '') + '">' + a + '</button>'; }).join('') + '</div>'; }
   function bindAv(cb) { document.querySelectorAll('#acctBody [data-av]').forEach(function (b) { b.onclick = function () { AC.av = +b.dataset.av; document.querySelectorAll('#acctBody [data-av]').forEach(function (x) { x.classList.toggle('on', x === b); }); if (cb) cb(AC.av); }; }); }
-  function acctErr(m) { var e = $('#acErr'); if (e) e.textContent = m || ''; }
+  function acctErr(m) { var e = $('#acErr'); if (e) setMsg(e, m || ''); }
   function openAcct() { modal('acctModal', true); renderAcct(); if (MM.player && MM.player.pid) apiCall('profile', pauth()).then(function (j) { mergePlayer(j.player); renderAcct(); }, function () { }); }
   function renderAcct() {
     var p = MM.player, h = '';
@@ -2872,7 +2875,7 @@ function GomokuLogic() {
     });
     return '<img src="' + c.toDataURL() + '" width="120" height="60" alt="">';
   }
-  function openShop() { modal('shopModal', true); renderShop(); apiCall('shop', {}).then(function (j) { SHOP = j; renderShop(); }, function (e) { $('#shopBody').innerHTML = '<div class="empty">' + esc(e.message) + '</div>'; }); }
+  function openShop() { modal('shopModal', true); renderShop(); apiCall('shop', {}).then(function (j) { SHOP = j; renderShop(); }, function (e) { $('#shopBody').innerHTML = '<div class="empty">' + escM(e.message) + '</div>'; }); }
   function renderShop() {
     if (!SHOP) { $('#shopBody').innerHTML = '<div class="empty">加载中…</div>'; return; }
     var p = MM.player, own = (p && p.own) || ['b_wood', 'k_classic', 'w_classic', 'q_basic'], eq = myEq();
@@ -2901,7 +2904,7 @@ function GomokuLogic() {
     });
     h += '<div class="olerr" id="shopErr"></div>';
     $('#shopBody').innerHTML = h;
-    var fail = function (e) { $('#shopErr').textContent = e.message; };
+    var fail = function (e) { setMsg($('#shopErr'), e.message); };
     document.querySelectorAll('[data-stab]').forEach(function (b) { b.onclick = function () { SHOP_TAB = b.dataset.stab; renderShop(); }; });
     var cosDo = function (op, body, msg) { ensurePlayer().then(function () { return apiCall(op, Object.assign(body, pauth())); }).then(function (j) { mergePlayer(j.player); renderShop(); if (msg) toast(msg, true); }, fail); };
     document.querySelectorAll('[data-xpbuy]').forEach(function (b) { b.onclick = function () { cosDo('exp_buy', { item: b.dataset.xpbuy }, '购买成功'); }; });
@@ -3108,7 +3111,7 @@ function GomokuLogic() {
       $('#glogBody').innerHTML = h;
       document.querySelectorAll('[data-grar]').forEach(function (b) { b.onclick = function () { openGlog(1, b.dataset.grar); }; });
       $('#gPrev').onclick = function () { openGlog(j.page - 1); }; $('#gNext').onclick = function () { openGlog(j.page + 1); };
-    }, function (e) { $('#glogBody').innerHTML = '<div class="empty">' + esc(e.message) + '</div>'; });
+    }, function (e) { $('#glogBody').innerHTML = '<div class="empty">' + escM(e.message) + '</div>'; });
   }
   function openPets() { modal('petModal', true); renderPets(); apiCall('pets', {}).then(function (j) { PETDEF = j; renderPets(); }, function () { }); if (MM.player && MM.player.pid) apiCall('profile', pauth()).then(function (j) { mergePlayer(j.player); renderPets(); }, function () { }); }
   function renderPets() {
@@ -3139,7 +3142,7 @@ function GomokuLogic() {
       h += '</div>';
     });
     $('#petBody').innerHTML = h + '</div>';
-    var fail = function (e) { $('#petErr').textContent = e.message; PG.busy = false; };
+    var fail = function (e) { setMsg($('#petErr'), e.message); PG.busy = false; };
     $('#draw1').onclick = function () { doDraw(1, fail); }; $('#draw10').onclick = function () { doDraw(10, fail); };
     $('#petShow2').onchange = function (e) { setPetShow(e.target.checked); };
     document.querySelectorAll('[data-eqpet]').forEach(function (b) { b.onclick = function () { equipPet(b.dataset.eqpet, fail); }; });
@@ -3339,9 +3342,9 @@ function GomokuLogic() {
   function loadRecs(force) {
     if (!force && RECS.list && Date.now() - RECS.t < 60000) { drawRecs(); return; }
     if (RECS.busy) return; RECS.busy = true;
-    apiCall('friend_recs', pauth()).then(function (j) { RECS.busy = false; RECS.t = Date.now(); RECS.list = j.list || []; drawRecs(); }, function (e) { RECS.busy = false; var el = $('#frRecs'); if (el) el.innerHTML = '<div class="hint">' + esc(e.message) + '</div>'; });
+    apiCall('friend_recs', pauth()).then(function (j) { RECS.busy = false; RECS.t = Date.now(); RECS.list = j.list || []; drawRecs(); }, function (e) { RECS.busy = false; var el = $('#frRecs'); if (el) el.innerHTML = '<div class="hint">' + escM(e.message) + '</div>'; });
   }
-  function frAct(op, body, ok) { return apiCall(op, Object.assign(body, pauth())).then(function (j) { if (ok) toast(ok, true); return friendPoll().then(function () { renderFriends(); return j; }); }, function (e) { var el = $('#frErr'); if (el) el.textContent = e.message; else toast(e.message); }); }
+  function frAct(op, body, ok) { return apiCall(op, Object.assign(body, pauth())).then(function (j) { if (ok) toast(ok, true); return friendPoll().then(function () { renderFriends(); return j; }); }, function (e) { var el = $('#frErr'); if (el) setMsg(el, e.message); else toast(e.message); }); }
   function renderFriends() {
     var j = FR.data; if (!j || FR.chat) return;
     var h = '<div class="hint">我的数字 ID：<b id="frMyId">' + j.me.uid + '</b> · ' + (j.disc ? '可被发现' : '已关闭好友发现') + '（在「我的 / 账号」中修改）</div>';
@@ -3373,7 +3376,7 @@ function GomokuLogic() {
       apiCall('friend_search', Object.assign({ q: $('#frQ').value }, pauth())).then(function (r) {
         $('#frRes').innerHTML = r.list.length ? r.list.map(function (x) { return '<div class="frow">' + esc(x.nick) + ' <span class="sub">ID ' + x.uid + '</span><button class="btn mini primary" data-add="' + x.uid + '">加好友</button></div>'; }).join('') : '<div class="hint">没有找到可添加的玩家</div>';
         document.querySelectorAll('#frRes [data-add]').forEach(function (b) { b.onclick = function () { frAct('friend_req', { uid: +b.dataset.add }, '好友申请已发送'); }; });
-      }, function (e) { $('#frRes').innerHTML = '<div class="olerr">' + esc(e.message) + '</div>'; });
+      }, function (e) { $('#frRes').innerHTML = '<div class="olerr">' + escM(e.message) + '</div>'; });
     };
     q('data-acc', function (u) { frAct('friend_accept', { uid: +u, accept: true }, '已添加好友'); });
     q('data-rej', function (u) { frAct('friend_accept', { uid: +u, accept: false }); });
@@ -3391,7 +3394,7 @@ function GomokuLogic() {
     $('#frBody').innerHTML = '<div class="row"><button class="btn mini" id="chBack">← 返回</button><b>与 ' + esc(f.nick) + ' 的私信</b></div><div class="chatlog" id="chList" style="height:300px"></div>' +
       '<div class="chatin"><input class="inp" id="chIn" maxlength="200" placeholder="最多 200 字"><button class="btn primary" id="chSend">发送</button></div><div class="olerr" id="frErr"></div>';
     $('#chBack').onclick = function () { clearInterval(FR.chatTimer); FR.chat = null; friendPoll().then(renderFriends); };
-    var send1 = function () { var x = $('#chIn').value; if (!x.trim()) return; apiCall('msg_send', Object.assign({ uid: uid, text: x }, pauth())).then(function () { $('#chIn').value = ''; pullChat(); }, function (e) { $('#frErr').textContent = e.message; }); };
+    var send1 = function () { var x = $('#chIn').value; if (!x.trim()) return; apiCall('msg_send', Object.assign({ uid: uid, text: x }, pauth())).then(function () { $('#chIn').value = ''; pullChat(); }, function (e) { setMsg($('#frErr'), e.message); }); };
     $('#chSend').onclick = send1; $('#chIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') send1(); });
     clearInterval(FR.chatTimer); FR.chatTimer = setInterval(function () { if (!FR.chat || !$('#frModal').classList.contains('show')) { clearInterval(FR.chatTimer); return; } pullChat(); }, 3000);
     pullChat();
