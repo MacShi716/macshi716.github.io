@@ -2526,12 +2526,22 @@ function GomokuLogic() {
   function apiCall(op, body, method) {
     var opt = method === 'GET' ? { method: 'GET' } : { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ op: op }, body || {})) };
     var u = method === 'GET' ? API + '?op=' + op + ['pid', 'tab', 'sea'].map(function (k) { return body && body[k] ? '&' + k + '=' + encodeURIComponent(body[k]) : ''; }).join('') : API;
-    return fetch(u, opt).then(function (r) {
+    var ctl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    if (ctl) opt.signal = ctl.signal;
+    var timer = null;
+    var timeout = new Promise(function (_, reject) {
+      timer = setTimeout(function () {
+        if (ctl) { try { ctl.abort(); } catch (e) { } }
+        var e = new Error(NOBK); e.disabled = true; reject(e);
+      }, 8000);
+    });
+    var req = fetch(u, opt).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (j) {
         if (!r.ok || j.enabled === false) { var nb = !j.error && [404, 405, 501, 503].indexOf(r.status) >= 0; var e = new Error(nb ? NOBK : (j.error || ('HTTP ' + r.status))); e.status = r.status; e.disabled = nb || j.enabled === false || r.status === 404 || r.status === 503; throw e; }
         return j;
       });
     }, function () { var e = new Error(NOBK); e.disabled = true; throw e; });
+    return Promise.race([req, timeout]).then(function (j) { clearTimeout(timer); return j; }, function (e) { clearTimeout(timer); throw e; });
   }
   function checkService() {
     if (MM.enabled !== null) return;
