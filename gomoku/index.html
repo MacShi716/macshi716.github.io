@@ -2516,11 +2516,11 @@ function GomokuLogic() {
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }); }
 
   // ================= 快速匹配 / Elo 积分 / 排行榜（后端：/api/g）=================
-  var API = (qparam('api') || '') + '/api/g';     // ?api= 仅测试用
+  var API = (qparam('api') || (/(^|\.)github\.io$/i.test(location.hostname) ? 'https://gomoku-api.malcoam.workers.dev' : '')) + '/api/g';     // ?api= 仅测试用
   var LS_PLAYER = 'gomoku.player.v1', MM_WAIT = 10;
   var MM = { state: 'idle', timer: null, t0: 0, busy: false, lastPoll: 0, enabled: null, player: loadJSON(LS_PLAYER, null), watch: null };
-  var NOBK = '这个功能要到完整版站用：https://gomoku-umber.vercel.app';
-  var NOBK_HTML = '这个功能要到完整版站用：<a href="https://gomoku-umber.vercel.app" target="_blank" rel="noopener">https://gomoku-umber.vercel.app</a>';
+  var NOBK = '联机服务暂时连不上，请稍后重试（账号数据仍与完整版共用）';
+  var NOBK_HTML = '联机服务暂时连不上，请稍后重试（账号数据仍与完整版共用）';
   function escM(m) { return m === NOBK ? NOBK_HTML : esc(m); }
   function setMsg(el, m) { if (m === NOBK) el.innerHTML = NOBK_HTML; else el.textContent = m; }
   function apiCall(op, body, method) {
