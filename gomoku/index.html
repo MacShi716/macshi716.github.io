@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>五子棋专业版</title>
+<link rel="stylesheet" href="../golden-ratio.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 rx=%2218%22 fill=%22%23dcb26a%22/%3E%3Ccircle cx=%2238%22 cy=%2238%22 r=%2224%22 fill=%22%23111%22/%3E%3Ccircle cx=%2264%22 cy=%2264%22 r=%2224%22 fill=%22%23fff%22 stroke=%22%23999%22 stroke-width=%222%22/%3E%3C/svg%3E">
 <style>
 :root{--bg:#f3efe6;--card:#fff;--ink:#2b2b2b;--muted:#8a8478;--accent:#c0392b;--win:#2e9d5b;--loss:#d0473a;--draw:#9a9a9a}
@@ -326,6 +327,31 @@ body.focus.fchat .fbar{position:fixed;top:0;left:0;right:0;z-index:30;background
  #vsIntro *,#vsIntro{animation:none!important}
  .petimg svg,.petimg img,.petimg::after,#petFloat .petimg{animation:none!important}
 }
+
+/* Golden ratio layout: major board column + minor sidebar. The board canvas stays square. */
+@media (min-width: 900px) {
+  .app {
+    max-width: var(--gr-content-wide);
+    display: grid;
+    grid-template-columns: 1.618fr 1fr;
+    gap: var(--gr-space-lg);
+    justify-content: center;
+    align-items: start;
+  }
+  .board-col {
+    width: 100%;
+    justify-self: center;
+    align-items: center;
+  }
+  .side {
+    max-width: none;
+    width: auto;
+    flex: none;
+  }
+}
+h1 { font-size: var(--gr-fs-lg); line-height: var(--gr-lh-tight); }
+.card { padding: var(--gr-space-sm) var(--gr-space-md); }
+canvas#board, #board { aspect-ratio: auto; }
 </style>
 </head>
 <body>
@@ -1650,7 +1676,7 @@ function GomokuLogic() {
     var wide = window.innerWidth >= 900, focus = document.body.classList.contains('focus'), s;
     if (focus) s = Math.min(window.innerWidth - 12, window.innerHeight - 12 - ($('#pbar').offsetHeight + $('#fbar').offsetHeight + 24));
     else if (!wide) s = Math.min(window.innerWidth - 16, 900);
-    else s = Math.min(window.innerWidth - 24 - 410, window.innerHeight - 30, 760);
+    else s = Math.min(window.innerWidth - 24 - Math.round(Math.min(window.innerWidth, 1158) * 0.382) - 26, window.innerHeight - 30, Math.floor(1158 * 0.618));
     size = Math.max(260, Math.floor(s));
     cell = size / (N - 1 + 1.8); pad = cell * 0.9;
     var dpr = window.devicePixelRatio || 1;

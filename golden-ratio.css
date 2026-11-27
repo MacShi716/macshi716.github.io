@@ -1,0 +1,161 @@
+/* Golden ratio tokens + utilities.
+   Spec: golden-ratio-spec.md
+   phi = 1.618. No remote fonts, icons, or CDNs.
+   This file does not restyle .theme-switch* or other exempt controls. */
+
+:root {
+  --phi: 1.618;
+  --phi-inv: 0.618;
+  --phi-minor: 0.382;
+
+  --gr-major: 61.8%;
+  --gr-minor: 38.2%;
+  --gr-ratio: 1.618 / 1;
+  --gr-ratio-portrait: 1 / 1.618;
+
+  --gr-fs-3xs: 0.236rem;
+  --gr-fs-2xs: 0.382rem;
+  --gr-fs-xs: 0.618rem;
+  --gr-fs-sm: 0.786rem;
+  --gr-fs-base: 1rem;
+  --gr-fs-md: 1.272rem;
+  --gr-fs-lg: 1.618rem;
+  --gr-fs-xl: 2.618rem;
+  --gr-fs-2xl: 4.236rem;
+
+  --gr-lh-tight: 1.272;
+  --gr-lh-body: 1.5;
+  --gr-lh-loose: 1.618;
+
+  --gr-space-3xs: 0.146rem;
+  --gr-space-2xs: 0.236rem;
+  --gr-space-xs: 0.382rem;
+  --gr-space-sm: 0.618rem;
+  --gr-space-md: 1rem;
+  --gr-space-lg: 1.618rem;
+  --gr-space-xl: 2.618rem;
+  --gr-space-2xl: 4.236rem;
+
+  --gr-content: 44.72rem;
+  --gr-content-wide: 72.36rem;
+  --gr-stack-min: 40rem;
+}
+
+.gr-split,
+.gr-split-rev {
+  display: grid;
+  gap: var(--gr-space-lg);
+  align-items: start;
+  min-width: 0;
+}
+
+.gr-split {
+  grid-template-columns: 1.618fr 1fr;
+}
+
+.gr-split-rev {
+  grid-template-columns: 1fr 1.618fr;
+}
+
+.gr-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-md);
+}
+
+.gr-block-major {
+  flex: 1.618 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+.gr-block-minor {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+.gr-media,
+.gr-media-portrait {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+}
+
+.gr-media {
+  aspect-ratio: var(--gr-ratio);
+}
+
+.gr-media-portrait {
+  aspect-ratio: var(--gr-ratio-portrait);
+}
+
+img.gr-media,
+img.gr-media-portrait,
+video.gr-media,
+video.gr-media-portrait {
+  object-fit: cover;
+  height: auto;
+}
+
+.gr-type-display {
+  font-size: var(--gr-fs-xl);
+  line-height: var(--gr-lh-tight);
+}
+
+.gr-type-title {
+  font-size: var(--gr-fs-lg);
+  line-height: var(--gr-lh-tight);
+}
+
+.gr-type-sub {
+  font-size: var(--gr-fs-md);
+  line-height: var(--gr-lh-body);
+}
+
+.gr-type-body {
+  font-size: var(--gr-fs-base);
+  line-height: var(--gr-lh-body);
+}
+
+.gr-type-small {
+  font-size: var(--gr-fs-sm);
+  line-height: var(--gr-lh-body);
+}
+
+.gr-type-caption {
+  font-size: var(--gr-fs-xs);
+  line-height: var(--gr-lh-body);
+}
+
+.gr-pad { padding: var(--gr-space-lg); }
+.gr-pad-sm { padding: var(--gr-space-sm); }
+.gr-gap { gap: var(--gr-space-md); }
+
+@media (max-width: 40rem) {
+  .gr-split,
+  .gr-split-rev {
+    grid-template-columns: 1fr;
+    gap: var(--gr-space-md);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gr-split,
+  .gr-split-rev,
+  .gr-media,
+  .gr-media-portrait {
+    scroll-behavior: auto;
+  }
+}
+
+/* Exempt elements keep their own shape even if a parent uses .gr-media. */
+.gr-exempt,
+.theme-switch,
+.theme-switch-slot,
+[role="switch"],
+canvas#board,
+#board,
+.nv-logo {
+  aspect-ratio: auto;
+}

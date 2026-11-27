@@ -1,8 +1,115 @@
 <!doctype html>
 <html lang="zh-CN">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MacShi716</title></head>
-<body style="font-family:system-ui,sans-serif;max-width:40em;margin:3em auto;padding:0 1em">
-<h1>MacShi716</h1>
-<ul><li><a href="./gomoku/">五子棋</a></li></ul>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MacShi716</title>
+<link rel="stylesheet" href="golden-ratio.css">
+<style>
+:root {
+  --bg: #f3efe6;
+  --card: #fffdf8;
+  --ink: #2b2b2b;
+  --muted: #8a8478;
+  --line: rgba(60, 40, 10, .12);
+  --accent: #8a5310;
+}
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Microsoft YaHei", "微软雅黑", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Source Han Sans SC", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: var(--gr-lh-body);
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+body {
+  background-image:
+    radial-gradient(44.72rem 27.64rem at 0% 0%, rgba(255, 248, 232, .92), transparent 62%),
+    radial-gradient(27.64rem 44.72rem at 100% 100%, rgba(138, 83, 16, .08), transparent 58%);
+}
+.page {
+  max-width: var(--gr-content);
+  margin: 0 auto;
+  padding: var(--gr-space-xl) var(--gr-space-md) var(--gr-space-2xl);
+  display: grid;
+  grid-template-columns: 1.618fr 1fr;
+  gap: var(--gr-space-lg);
+  align-items: start;
+  min-height: calc(100vh - 2 * var(--gr-space-xl));
+}
+.intro h1 {
+  margin: 0;
+  font-size: var(--gr-fs-xl);
+  line-height: var(--gr-lh-tight);
+  letter-spacing: .02em;
+}
+.intro p {
+  margin: var(--gr-space-sm) 0 0;
+  color: var(--muted);
+  font-size: var(--gr-fs-sm);
+  line-height: var(--gr-lh-loose);
+}
+.card {
+  display: block;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  padding: var(--gr-space-lg);
+  color: inherit;
+  text-decoration: none;
+  box-shadow: 0 14px 38px rgba(71, 55, 29, .10);
+}
+.card:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 68%, transparent);
+  outline-offset: 2px;
+}
+.card .media {
+  aspect-ratio: var(--gr-ratio);
+  border-radius: .75rem;
+  background:
+    radial-gradient(circle at 38% 38%, #111 0 18%, transparent 19%),
+    radial-gradient(circle at 64% 64%, #fff 0 16%, transparent 17%),
+    linear-gradient(135deg, #e8d3a4, #dcb26a 58%, #c9a05a);
+  margin-bottom: var(--gr-space-sm);
+}
+.card h2 {
+  margin: 0;
+  font-size: var(--gr-fs-md);
+  line-height: var(--gr-lh-tight);
+  color: var(--accent);
+}
+.card p {
+  margin: var(--gr-space-xs) 0 0;
+  color: var(--muted);
+  font-size: var(--gr-fs-sm);
+}
+@media (max-width: 40rem) {
+  .page {
+    grid-template-columns: 1fr;
+    padding: var(--gr-space-lg) var(--gr-space-sm) var(--gr-space-xl);
+    min-height: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+</head>
+<body>
+  <main class="page">
+    <section class="intro">
+      <h1>MacShi716</h1>
+      <p>个人静态小站</p>
+    </section>
+    <section>
+      <a class="card" href="./gomoku/">
+        <div class="media" aria-hidden="true"></div>
+        <h2>五子棋</h2>
+        <p>专业版，可在手机上落子。</p>
+      </a>
+    </section>
+  </main>
 </body>
 </html>
